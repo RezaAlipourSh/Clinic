@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -25,5 +26,6 @@ export class UserEntity {
   @Column({ nullable: true })
   otpId: number;
   @OneToOne(() => UserOtpEntity, (otp) => otp.user)
+  @JoinColumn()
   otp: UserOtpEntity;
 }
