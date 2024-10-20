@@ -4,7 +4,7 @@ import { SwaggerConfigInit } from "./config/swagger.config";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  SwaggerConfigInit(app)
+  SwaggerConfigInit(app);
 
   const { PORT, APP_URL } = process.env;
   await app.listen(PORT, () => {
