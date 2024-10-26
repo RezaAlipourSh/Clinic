@@ -4,10 +4,13 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { UserOtpEntity } from "./userotp.entity";
+import { ReservationEntity } from "src/modules/reservation/entities/reservation.entity";
+import { TransactionEntity } from "src/modules/transaction/entities/transaction.entity";
 
 @Entity(EntityNames.User)
 export class UserEntity {
@@ -28,4 +31,8 @@ export class UserEntity {
   @OneToOne(() => UserOtpEntity, (otp) => otp.user)
   @JoinColumn()
   otp: UserOtpEntity;
+  @OneToMany(() => ReservationEntity, (reserve) => reserve.user)
+  reserves: ReservationEntity[];
+  @OneToMany(() => TransactionEntity, (transaction) => transaction.user)
+  transactions: TransactionEntity[];
 }
