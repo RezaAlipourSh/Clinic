@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
 
 @Injectable()
 export class TransactionService {
-  create(createTransactionDto: CreateTransactionDto) {
+  create(createTransactionDto) {
     return 'This action adds a new transaction';
   }
 
@@ -16,7 +14,7 @@ export class TransactionService {
     return `This action returns a #${id} transaction`;
   }
 
-  update(id: number, updateTransactionDto: UpdateTransactionDto) {
+  update(id: number, updateTransactionDto) {
     return `This action updates a #${id} transaction`;
   }
 

@@ -25,7 +25,7 @@ export class ReservationEntity {
   finish_visit_time: string;
   @Column()
   date: string;
-  @Column({ type: "enum", default: ReserveStatus.Pending })
+  @Column({ type: "enum", enum: ReserveStatus, default: ReserveStatus.Pending })
   status: string;
   @Column()
   payment_status: string;
