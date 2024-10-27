@@ -3,6 +3,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  NotFoundException,
   Scope,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -56,36 +57,38 @@ export class ClinicService {
     };
   }
   async checkOtp(otpDto: checkOtpDto) {
-    const {code, mobile} = otpDto
-    const now =new Date()
+    const { code, mobile } = otpDto;
+    const now = new Date();
     const clinic = await this.clinicRepo.findOne({
-      where:{mobile},
-      relations:{
-        otp:true
-      }
-    })
+      where: { mobile },
+      relations: {
+        otp: true,
+      },
+    });
 
-    if(!clinic || !clinic?.otp) {
-      throw new UnauthorizedException("Not found Account") 
+    if (!clinic || !clinic?.otp) {
+      throw new UnauthorizedException("Not found Account");
     }
-    const otp =clinic?.otp
-    if(otp?.code !==code) {
-      throw new UnauthorizedException("incorrect Otp Code")
+    const otp = clinic?.otp;
+    if (otp?.code !== code) {
+      throw new UnauthorizedException("incorrect Otp Code");
     }
-    if(otp?.expires_in < now) throw new UnauthorizedException("Otp Code Expired")
-    if(!clinic.mobile_verify) {
-      await this.clinicRepo.update({id:clinic.id},{
-        mobile_verify:true
-      })
+    if (otp?.expires_in < now)
+      throw new UnauthorizedException("Otp Code Expired");
+    if (!clinic.mobile_verify) {
+      await this.clinicRepo.update(
+        { id: clinic.id },
+        {
+          mobile_verify: true,
+        }
+      );
     }
-    const {accessToken,refreshToken} = this.makeToken({id:clinic.id})
+    const { accessToken, refreshToken } = this.makeToken({ id: clinic.id });
     return {
       accessToken,
       refreshToken,
-      message:"Logged In"
-    }
-
-
+      message: "Logged In",
+    };
   }
 
   async createOtpClinic(clinic: ClinicEntity) {
@@ -124,6 +127,12 @@ export class ClinicService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async findOneById(id: number) {
+    const clinic = await this.clinicRepo.findOneBy({ id });
+    if (!clinic) throw new NotFoundException("Clinic Not Found with this Id");
+    return clinic;
   }
 
   async validateAccessToken(token: string) {

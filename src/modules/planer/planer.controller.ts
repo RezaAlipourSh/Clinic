@@ -8,8 +8,10 @@ import {
   Delete,
 } from "@nestjs/common";
 import { PlanerService } from "./planer.service";
+import { ApiTags } from "@nestjs/swagger";
 
 @Controller("planer")
+@ApiTags("Planer")
 export class PlanerController {
   constructor(private readonly planerService: PlanerService) {}
 

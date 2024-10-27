@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   OneToOne,
@@ -35,15 +36,18 @@ export class ClinicEntity {
   categoryId: number;
   @Column({ nullable: true })
   otpId: number;
-  @Column({ type: "enum", enum:ClinicStatus,default: ClinicStatus.Pending })
+  @Column({ type: "enum", enum: ClinicStatus, default: ClinicStatus.Pending })
   status: string;
   @Column({ nullable: true })
   confirmed_at: Date;
   @CreateDateColumn()
   created_at: Date;
   @OneToOne(() => ClinicOtpEntity, (otp) => otp.clinic)
+  @JoinColumn()
   otp: ClinicOtpEntity;
-  @ManyToOne(() => CategoryEntity, (category) => category.clinics, {onDelete:"SET NULL"})
+  @ManyToOne(() => CategoryEntity, (category) => category.clinics, {
+    onDelete: "SET NULL",
+  })
   category: CategoryEntity;
   @OneToMany(() => PlanerEntity, (plan) => plan.clinic)
   plan: PlanerEntity[];
