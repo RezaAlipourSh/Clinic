@@ -8,33 +8,22 @@ import {
   Delete,
 } from "@nestjs/common";
 import { ClinicService } from "./clinic.service";
+import { ApiTags } from "@nestjs/swagger";
+import { ClinicSignupDto } from "./dto/clinic.dto";
+import { checkOtpDto } from "../auth/dto/otp.dto";
 
 @Controller("clinic")
+@ApiTags("clinic")
 export class ClinicController {
   constructor(private readonly clinicService: ClinicService) {}
 
-  @Post()
-  create(@Body() createClinicDto) {
+  @Post("/signup")
+  signup(@Body() createClinicDto: ClinicSignupDto) {
     return this.clinicService.create(createClinicDto);
   }
 
-  @Get()
-  findAll() {
-    return this.clinicService.findAll();
-  }
-
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.clinicService.findOne(+id);
-  }
-
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateClinicDto) {
-    return this.clinicService.update(+id, updateClinicDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.clinicService.remove(+id);
+  @Post("/check-otp")
+  checkOtp(@Body() otpDto: checkOtpDto) {
+    return this.clinicService.checkOtp(otpDto);
   }
 }
