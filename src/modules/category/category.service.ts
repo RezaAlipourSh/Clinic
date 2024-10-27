@@ -36,7 +36,7 @@ export class CategoryService {
     await this.categoryRepo.insert({
       title,
       description,
-      slug,
+      slug:slug?? title,
       image: Location,
       imageKey: Key,
     });
