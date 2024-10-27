@@ -9,11 +9,11 @@ export class PlanerEntity {
   id: number;
   @Column()
   day_name: string;
-  @Column()
-  day_number: string;
-  @Column()
+  @Column({ nullable: true })
+  day_number: number;
+  @Column({ type: "time" })
   start_time: string;
-  @Column()
+  @Column({ type: "time" })
   finish_time: string;
   @Column({ type: "enum", enum: PlanStatus, default: PlanStatus.Open })
   status: string;

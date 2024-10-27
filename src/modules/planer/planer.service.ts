@@ -1,24 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { PlanerEntity } from "./entities/planer.entity";
 
 @Injectable()
 export class PlanerService {
-  create(createPlanerDto) {
-    return 'This action adds a new planer';
-  }
+  constructor(
+    @InjectRepository(PlanerEntity) private planRepo: Repository<PlanerEntity>
+  ) {}
 
-  findAll() {
-    return `This action returns all planer`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} planer`;
-  }
-
-  update(id: number, updatePlanerDto) {
-    return `This action updates a #${id} planer`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} planer`;
+  create(PlanerDto) {
+    return "This action adds a new planer";
   }
 }
