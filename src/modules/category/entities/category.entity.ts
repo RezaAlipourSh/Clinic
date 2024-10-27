@@ -14,6 +14,8 @@ export class CategoryEntity {
   description: string;
   @Column()
   image: string;
+  @Column({ nullable: true })
+  imageKey: string;
   @OneToMany(() => ClinicEntity, (clinic) => clinic.category)
   clinics: ClinicEntity[];
 }

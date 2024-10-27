@@ -15,7 +15,7 @@ export class PlanerEntity {
   start_time: string;
   @Column()
   finish_time: string;
-  @Column({ type: "enum", default: PlanStatus.Open })
+  @Column({ type: "enum", enum: PlanStatus, default: PlanStatus.Open })
   status: string;
   @Column({ nullable: true })
   clinicId: number;

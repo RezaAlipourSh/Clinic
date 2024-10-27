@@ -35,7 +35,7 @@ export class ClinicEntity {
   categoryId: number;
   @Column({ nullable: true })
   otpId: number;
-  @Column({ type: "enum", default: ClinicStatus.Pending })
+  @Column({ type: "enum", enum:ClinicStatus,default: ClinicStatus.Pending })
   status: string;
   @Column({ nullable: true })
   confirmed_at: Date;

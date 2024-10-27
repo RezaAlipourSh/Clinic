@@ -1,14 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { PlanerService } from './planer.service';
-import { CreatePlanerDto } from './dto/create-planer.dto';
-import { UpdatePlanerDto } from './dto/update-planer.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from "@nestjs/common";
+import { PlanerService } from "./planer.service";
 
-@Controller('planer')
+@Controller("planer")
 export class PlanerController {
   constructor(private readonly planerService: PlanerService) {}
 
   @Post()
-  create(@Body() createPlanerDto: CreatePlanerDto) {
+  create(@Body() createPlanerDto) {
     return this.planerService.create(createPlanerDto);
   }
 
@@ -17,18 +23,18 @@ export class PlanerController {
     return this.planerService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.planerService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePlanerDto: UpdatePlanerDto) {
+  @Patch(":id")
+  update(@Param("id") id: string, @Body() updatePlanerDto) {
     return this.planerService.update(+id, updatePlanerDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Delete(":id")
+  remove(@Param("id") id: string) {
     return this.planerService.remove(+id);
   }
 }

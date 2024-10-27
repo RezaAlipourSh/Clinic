@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePlanerDto } from './dto/create-planer.dto';
-import { UpdatePlanerDto } from './dto/update-planer.dto';
 
 @Injectable()
 export class PlanerService {
-  create(createPlanerDto: CreatePlanerDto) {
+  create(createPlanerDto) {
     return 'This action adds a new planer';
   }
 
@@ -16,7 +14,7 @@ export class PlanerService {
     return `This action returns a #${id} planer`;
   }
 
-  update(id: number, updatePlanerDto: UpdatePlanerDto) {
+  update(id: number, updatePlanerDto) {
     return `This action updates a #${id} planer`;
   }
 
