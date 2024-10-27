@@ -43,7 +43,7 @@ export class ClinicEntity {
   created_at: Date;
   @OneToOne(() => ClinicOtpEntity, (otp) => otp.clinic)
   otp: ClinicOtpEntity;
-  @ManyToOne(() => CategoryEntity, (category) => category.clinics)
+  @ManyToOne(() => CategoryEntity, (category) => category.clinics, {onDelete:"SET NULL"})
   category: CategoryEntity;
   @OneToMany(() => PlanerEntity, (plan) => plan.clinic)
   plan: PlanerEntity[];
