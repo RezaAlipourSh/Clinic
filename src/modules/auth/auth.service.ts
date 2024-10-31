@@ -105,22 +105,22 @@ export class AuthService {
     };
   }
 
-  //   async validateAccessToken(token: string) {
-  //     try {
-  //       const payload = this.jwtService.verify<TokensPayload>(token, {
-  //         secret: process.env.ACCESS_TOKEN_SECRET,
-  //       });
-  //       console.log(payload);
-  //       if (typeof payload === "object" && payload?.id) {
-  //         const user = await this.userRepo.findOneBy({ id: payload.id });
-  //         if (!user) {
-  //           throw new UnauthorizedException("Login On Your Acoount");
-  //         }
-  //         return user;
-  //       }
-  //       throw new UnauthorizedException("Login on your account");
-  //     } catch (error) {
-  //       throw new UnauthorizedException("Login on your account");
-  //     }
-  //   }
+  async validateAccessToken(token: string) {
+    try {
+      const payload = this.jwtService.verify<TokensPayload>(token, {
+        secret: process.env.ACCESS_TOKEN_SECRET,
+      });
+      console.log(payload);
+      if (typeof payload === "object" && payload?.id) {
+        const user = await this.userRepo.findOneBy({ id: payload.id });
+        if (!user) {
+          throw new UnauthorizedException("Login On Your Acoount");
+        }
+        return user;
+      }
+      throw new UnauthorizedException("Login on your account");
+    } catch (error) {
+      throw new UnauthorizedException("Login on your account");
+    }
+  }
 }

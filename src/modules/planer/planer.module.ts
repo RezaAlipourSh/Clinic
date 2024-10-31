@@ -4,11 +4,10 @@ import { PlanerController } from "./planer.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { PlanerEntity } from "./entities/planer.entity";
 import { ClinicEntity } from "../clinic/entities/clinic.entity";
-import { ClinicService } from "../clinic/clinic.service";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PlanerEntity])],
+  imports: [TypeOrmModule.forFeature([PlanerEntity, ClinicEntity])],
   controllers: [PlanerController],
-  providers: [PlanerService, ClinicService],
+  providers: [PlanerService],
 })
 export class PlanerModule {}

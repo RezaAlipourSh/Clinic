@@ -132,7 +132,8 @@ export class ClinicService {
   async findOneById(id: number) {
     const clinic = await this.clinicRepo.findOneBy({ id });
     if (!clinic) throw new NotFoundException("Clinic Not Found with this Id");
-    return clinic;
+    // return clinic;
+    return true;
   }
 
   async validateAccessToken(token: string) {

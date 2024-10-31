@@ -30,13 +30,14 @@ export class CategoryService {
       image,
       "clinic-reservation"
     );
+    // if(Error: certificate is not yet valid) => set date & time correctly in your system
     let { description, slug, title } = createCategoryDto;
     const category = await this.findOneBySlug(slug);
     if (category) throw new ConflictException("Category Already Exist");
     await this.categoryRepo.insert({
       title,
       description,
-      slug:slug?? title,
+      slug: slug ?? title,
       image: Location,
       imageKey: Key,
     });
