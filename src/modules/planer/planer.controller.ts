@@ -8,7 +8,9 @@ import {
   Delete,
 } from "@nestjs/common";
 import { PlanerService } from "./planer.service";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { PlanerDto } from "./dto/Planer.dto";
+import { FormType } from "src/common/enums/formType.enum";
 
 @Controller("planer")
 @ApiTags("Planer")
@@ -16,7 +18,8 @@ export class PlanerController {
   constructor(private readonly planerService: PlanerService) {}
 
   @Post()
-  create(@Body() createPlanerDto) {
+  @ApiConsumes(FormType.Urlencoded, FormType.Json)
+  create(@Body() createPlanerDto: PlanerDto) {
     return this.planerService.create(createPlanerDto);
   }
 
