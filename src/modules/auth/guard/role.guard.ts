@@ -17,13 +17,14 @@ export class RoleGuard implements CanActivate {
       ROLE_KEY,
       [context.getClass(), context.getHandler()]
     );
+    console.log(requiredRoles);
     if (!requiredRoles || requiredRoles.length == 0) return true;
     const request: Request = context.switchToHttp().getRequest<Request>();
     const user = request.user;
-    const userRole = user?.role ?? UserRole.User;
+    // console.log(user);
+    // const userRole = user?.role ?? UserRole.User;
     if (user.role === UserRole.Admin || user.role === UserRole.Owner)
-      return true;
-    if (requiredRoles.includes(userRole as UserRole)) return true;
+      if (requiredRoles.includes(UserRole.Admin || UserRole.Owner)) return true;
     throw new ForbiddenException();
   }
 }

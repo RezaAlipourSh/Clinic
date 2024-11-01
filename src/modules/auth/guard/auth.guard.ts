@@ -21,6 +21,7 @@ export class AuthGuard implements CanActivate {
       SKIP_AUTH,
       context.getHandler()
     );
+    // console.log({ isSkippedAuth });
     if (isSkippedAuth) return true;
     const httpContext = context.switchToHttp();
     const request: Request = httpContext.getRequest<Request>();
@@ -35,7 +36,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException("Login on your account");
     }
     const [bearer, token] = authorization?.split(" ");
-    if (bearer?.toLowerCase() !== "bearer" || !token || isJWT(token))
+    if (bearer?.toLowerCase() !== "bearer" || !token || !isJWT(token))
       throw new UnauthorizedException("Login On Your Account");
     return token;
   }
