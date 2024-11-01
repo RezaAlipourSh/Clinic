@@ -151,6 +151,7 @@ export class ClinicService {
           first_name: clinic.first_name,
           last_name: clinic.last_name,
           mobile: clinic.mobile,
+          role: clinic.role,
         };
       }
       throw new UnauthorizedException("Login on your account");

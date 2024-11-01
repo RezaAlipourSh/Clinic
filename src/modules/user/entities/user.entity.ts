@@ -11,6 +11,7 @@ import {
 import { UserOtpEntity } from "./userotp.entity";
 import { ReservationEntity } from "src/modules/reservation/entities/reservation.entity";
 import { TransactionEntity } from "src/modules/transaction/entities/transaction.entity";
+import { UserRole } from "../enum/userRole.enum";
 
 @Entity(EntityNames.User)
 export class UserEntity {
@@ -24,6 +25,8 @@ export class UserEntity {
   mobile: string;
   @Column({ nullable: true, default: false })
   mobile_verify: boolean;
+  @Column({ type: "enum", enum: UserRole, default: UserRole.User })
+  role: string;
   @CreateDateColumn()
   created_at: Date;
   @Column({ nullable: true })

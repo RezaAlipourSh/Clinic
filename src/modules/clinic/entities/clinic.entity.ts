@@ -32,6 +32,8 @@ export class ClinicEntity {
   address: string;
   @Column({ default: 200000 })
   cost: string;
+  @Column({ default: "Doctor", nullable: true })
+  role: string;
   @Column({ nullable: true })
   categoryId: number;
   @Column({ nullable: true })
