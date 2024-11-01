@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { DeepPartial, Repository } from "typeorm";
 import { PlanerEntity } from "./entities/planer.entity";
@@ -11,6 +15,8 @@ import {
   paginationSolver,
 } from "src/common/utility/pagination.util";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
+import { convertToTimeFormat } from "src/common/utility/function.util";
+import { PlanDayName } from "./enum/plan-status.enum";
 
 @Injectable()
 export class PlanerService {
@@ -38,26 +44,22 @@ export class PlanerService {
     };
   }
 
-  // async update(id: number, PlanerDto: UpdatePlanDto) {
-  async update(id: string, PlanerDto: UpdatePlanDto) {
-    // async update(id: number) {
-    // await this.findOneById(id);
-    const newid = Number(id);
-    await this.findOneById(newid);
+  async update(id: number, PlanerDto: UpdatePlanDto) {
+    await this.findOneById(id);
     const { day_name, day_number, finish_time, start_time, status } = PlanerDto;
 
     const plan: DeepPartial<PlanerEntity> = {};
-
+    console.log(Object.keys(PlanDayName));
+    // if (day_name &&)
     if (day_number) plan["day_number"] = +day_number;
     if (day_name) plan["day_name"] = day_name;
-    if (finish_time) plan["finish_time"] = finish_time;
-    if (start_time) plan["start_time"] = start_time;
+    if (finish_time) plan["finish_time"] = convertToTimeFormat(finish_time);
+    if (start_time) plan["start_time"] = convertToTimeFormat(start_time);
     if (status) plan["status"] = status;
 
-    await this.planRepo.update({ id: newid }, plan);
+    await this.planRepo.update({ id }, plan);
 
     return {
-      // plan,
       message: "Plan Uptaded",
     };
   }

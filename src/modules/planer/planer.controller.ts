@@ -38,12 +38,6 @@ export class PlanerController {
     return this.planerService.findAll(pagination);
   }
 
-  // @Get(":id")
-  // @ApiConsumes(FormType.Urlencoded)
-  // findOne(@Param("id", ParseIntPipe) id: number) {
-  //   return this.planerService.findOneById(id);
-  // }
-
   @Get(":id")
   @Pagination()
   @ApiConsumes(FormType.Urlencoded, FormType.Json)
@@ -54,20 +48,15 @@ export class PlanerController {
     return this.planerService.findClinicPlans(+id, paginationDto);
   }
 
-  @Patch("/update")
-  // @SkipAuth()
+  @Patch("/:id")
+  //reason of error (validation failed numeric string is excepted) =>
+  //because route was @Patch("/upload") instead to @Patch("/:id") - must set param with :id
   @ApiConsumes(FormType.Urlencoded, FormType.Json)
-  // @ApiConsumes(FormType.Multipart)
   update(
-    // @Param("id", ParseIntPipe) id: number
-    // @Param("id", ParseIntPipe) id: number,
-    @Param("id") id: string,
+    @Param("id", ParseIntPipe) id: number,
     @Body() planDto: UpdatePlanDto
   ) {
-    // console.log({ id, planDto });
-
     return this.planerService.update(id, planDto);
-    // return this.planerService.update(+id);
   }
 
   @Delete(":id")
