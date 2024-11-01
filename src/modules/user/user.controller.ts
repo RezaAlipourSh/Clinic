@@ -8,8 +8,13 @@ import {
   Delete,
 } from "@nestjs/common";
 import { UserService } from "./user.service";
+import { UserAuth } from "src/common/decorator/auth.decorator";
+import { ApiTags } from "@nestjs/swagger";
+import { CanAccess } from "src/common/decorator/role.decorator";
+import { UserRole } from "./enum/userRole.enum";
 
 @Controller("user")
+@ApiTags("User")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -17,6 +22,8 @@ export class UserController {
   create(@Body() createUserDto) {}
 
   @Get()
+  @UserAuth()
+  // @CanAccess(UserRole.Admin)
   findAll() {
     return this.userService.findAll();
   }
