@@ -11,7 +11,7 @@ import { isJWT } from "class-validator";
 import { ClinicService } from "../clinic.service";
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class ClinicGuard implements CanActivate {
   constructor(
     private clinicService: ClinicService,
     private reflector: Reflector
@@ -35,7 +35,7 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException("Login on your account");
     }
     const [bearer, token] = authorization?.split(" ");
-    if (bearer?.toLowerCase() !== "bearer" || !token || isJWT(token))
+    if (bearer?.toLowerCase() !== "bearer" || !token || !isJWT(token))
       throw new UnauthorizedException("Login On Your Account");
     return token;
   }

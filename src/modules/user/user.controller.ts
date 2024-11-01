@@ -12,9 +12,11 @@ import { UserAuth } from "src/common/decorator/auth.decorator";
 import { ApiTags } from "@nestjs/swagger";
 import { CanAccess } from "src/common/decorator/role.decorator";
 import { UserRole } from "./enum/userRole.enum";
+import { SkipAuth } from "src/common/decorator/skip-auth.decorator";
 
 @Controller("user")
 @ApiTags("User")
+@UserAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -22,8 +24,8 @@ export class UserController {
   create(@Body() createUserDto) {}
 
   @Get()
-  @UserAuth()
-  // @CanAccess(UserRole.Admin)
+  // @SkipAuth()
+  @CanAccess(UserRole.Admin)
   findAll() {
     return this.userService.findAll();
   }

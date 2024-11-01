@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsEnum, Length } from "class-validator";
-import { PlanDayName } from "../enum/plan-status.enum";
+import { PlanDayName, PlanStatus } from "../enum/plan-status.enum";
 
 export class PlanerDto {
   @ApiProperty({ enum: PlanDayName })
@@ -16,4 +16,22 @@ export class PlanerDto {
   finish_time: string;
   @ApiProperty()
   clinicId: number;
+  @ApiPropertyOptional({ enum: PlanStatus })
+  @IsEnum(PlanStatus)
+  status: string;
+}
+
+export class UpdatePlanDto {
+  @ApiPropertyOptional({ enum: PlanDayName })
+  @IsEnum(PlanDayName)
+  day_name: string;
+  @ApiPropertyOptional()
+  day_number: number;
+  @ApiPropertyOptional()
+  start_time: string;
+  @ApiPropertyOptional()
+  finish_time: string;
+  @ApiPropertyOptional({ enum: PlanStatus })
+  @IsEnum(PlanStatus)
+  status: string;
 }
