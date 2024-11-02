@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from "@nestjs/common";
 import { ClinicService } from "./clinic.service";
 import { ApiConsumes, ApiTags } from "@nestjs/swagger";
@@ -28,5 +29,15 @@ export class ClinicController {
   @ApiConsumes(FormType.Urlencoded, FormType.Json)
   checkOtp(@Body() otpDto: checkOtpDto) {
     return this.clinicService.checkOtp(otpDto);
+  }
+
+  @Get("/clinic-confirm/:id")
+  confirm(@Param("id", ParseIntPipe) id: number) {
+    return this.clinicService.confirmClinic(id);
+  }
+
+  @Get("/clinic-reject/:id")
+  reject(@Param("id", ParseIntPipe) id: number) {
+    return this.clinicService.rejectClinic(id);
   }
 }
