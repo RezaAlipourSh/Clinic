@@ -7,14 +7,12 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { DeepPartial, Repository } from "typeorm";
 import { PlanerEntity } from "./entities/planer.entity";
 import { PlanerDto, UpdatePlanDto } from "./dto/Planer.dto";
-import { ClinicService } from "../clinic/clinic.service";
 import { ClinicEntity } from "../clinic/entities/clinic.entity";
 import { PaginationDto } from "src/common/dto/pagination.dto";
 import {
   paginationGenerator,
   paginationSolver,
 } from "src/common/utility/pagination.util";
-import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import { convertToTimeFormat } from "src/common/utility/function.util";
 import { PlanDayName, PlanStatus } from "./enum/plan-status.enum";
 
@@ -125,7 +123,6 @@ export class PlanerService {
       take: limit,
       order: { id: "DESC" },
     });
-    console.log(paginationGenerator(counts, page, limit), plans);
 
     return {
       pagination: paginationGenerator(counts, page, limit),

@@ -8,3 +8,19 @@ export function convertToTimeFormat(string: string) {
 
   return `${hours}:${min}:${sec}`;
 }
+
+export function addMinutesToTime(timeString: string, minutes: number) {
+  //split  the time string
+  const [hours, min, seconds] = timeString.split(":").map(Number);
+  //create new date object with currenttime
+  const date = new Date();
+  date.setHours(hours, min, seconds);
+  //add Minutes
+  date.setMinutes(date.getMinutes() + minutes);
+  //format the new time to 'hh:mm:ss' format
+  const newHour = date.getHours().toString().padStart(2, "0");
+  const newMin = date.getMinutes().toString().padStart(2, "0");
+  const newSecond = date.getSeconds().toString().padStart(2, "0");
+
+  return `${newHour}:${newMin}:${newSecond}`;
+}
