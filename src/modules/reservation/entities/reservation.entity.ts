@@ -10,6 +10,7 @@ import { ReserveStatus } from "../enum/reserve-status.enum";
 import { ClinicEntity } from "src/modules/clinic/entities/clinic.entity";
 import { UserEntity } from "src/modules/user/entities/user.entity";
 import { TransactionEntity } from "src/modules/transaction/entities/transaction.entity";
+import { TransactionStatus } from "src/modules/transaction/enum/transaction-status.enum";
 
 @Entity(EntityNames.Reservation)
 export class ReservationEntity {
@@ -27,9 +28,13 @@ export class ReservationEntity {
   date: string;
   @Column({ type: "enum", enum: ReserveStatus, default: ReserveStatus.Pending })
   status: string;
-  @Column()
+  @Column({
+    type: "enum",
+    enum: TransactionStatus,
+    default: TransactionStatus.UnPaid,
+  })
   payment_status: string;
-  @Column()
+  @Column({ nullable: true })
   paymentId: number;
   @ManyToOne(() => ClinicEntity, (clinic) => clinic.reserves, {
     onDelete: "CASCADE",

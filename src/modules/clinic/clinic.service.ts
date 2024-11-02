@@ -19,6 +19,7 @@ import { ClinicSignupDto } from "./dto/clinic.dto";
 import { randomInt } from "crypto";
 import { TokensPayload } from "../auth/types/payload";
 import { checkOtpDto } from "../auth/dto/otp.dto";
+import { ClinicStatus } from "./enum/clinicStatus.enum";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ClinicService {
@@ -132,8 +133,7 @@ export class ClinicService {
   async findOneById(id: number) {
     const clinic = await this.clinicRepo.findOneBy({ id });
     if (!clinic) throw new NotFoundException("Clinic Not Found with this Id");
-    // return clinic;
-    return true;
+    return clinic;
   }
 
   async validateAccessToken(token: string) {
@@ -158,5 +158,43 @@ export class ClinicService {
     } catch (error) {
       throw new UnauthorizedException("Login on your account");
     }
+  }
+
+  async confirmClinic(id: number) {
+    let clinic = await this.findOneById(id);
+    const now = new Date();
+    const status = clinic.status;
+    if (status == ClinicStatus.Confirmed) {
+      return { message: " clinic Already Confirmed." };
+    } else if (status !== ClinicStatus.Confirmed) {
+      await this.clinicRepo.update(
+        { id },
+        {
+          status: ClinicStatus.Confirmed,
+          confirmed_at: now,
+        }
+      );
+    }
+    return {
+      message: "clinic Confirmed",
+    };
+  }
+
+  async rejectClinic(id: number) {
+    let clinic = await this.findOneById(id);
+    const status = clinic.status;
+    if (status == ClinicStatus.Rejected) {
+      return { message: " clinic Already Rejected." };
+    } else if (status !== ClinicStatus.Rejected) {
+      await this.clinicRepo.update(
+        { id },
+        {
+          status: ClinicStatus.Rejected,
+        }
+      );
+    }
+    return {
+      message: "clinic Rejected",
+    };
   }
 }

@@ -16,7 +16,7 @@ import {
 } from "src/common/utility/pagination.util";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import { convertToTimeFormat } from "src/common/utility/function.util";
-import { PlanDayName } from "./enum/plan-status.enum";
+import { PlanDayName, PlanStatus } from "./enum/plan-status.enum";
 
 @Injectable()
 export class PlanerService {
@@ -49,8 +49,17 @@ export class PlanerService {
     const { day_name, day_number, finish_time, start_time, status } = PlanerDto;
 
     const plan: DeepPartial<PlanerEntity> = {};
-    console.log(Object.keys(PlanDayName));
-    // if (day_name &&)
+
+    // convert values of enum to array
+    let days = Object.values(PlanDayName) as string[];
+    let statusplan = Object.values(PlanStatus) as string[];
+
+    if (day_name && !days.includes(day_name))
+      throw new BadRequestException("Incorrect Dayname");
+
+    if (status && !statusplan.includes(status))
+      throw new BadRequestException("Incorrect status");
+
     if (day_number) plan["day_number"] = +day_number;
     if (day_name) plan["day_name"] = day_name;
     if (finish_time) plan["finish_time"] = convertToTimeFormat(finish_time);

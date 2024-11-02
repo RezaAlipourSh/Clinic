@@ -23,7 +23,6 @@ export class PlanerDto {
 
 export class UpdatePlanDto {
   @ApiPropertyOptional({ enum: PlanDayName })
-  // @IsEnum(PlanDayName,{message:})
   day_name: string;
   @ApiPropertyOptional()
   day_number: number;
@@ -32,6 +31,5 @@ export class UpdatePlanDto {
   @ApiPropertyOptional()
   finish_time: string;
   @ApiPropertyOptional({ enum: PlanStatus })
-  @IsEnum(PlanStatus)
   status: string;
 }

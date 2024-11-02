@@ -28,7 +28,7 @@ export class TransactionEntity {
     enum: TransactionStatus,
     default: TransactionStatus.UnPaid,
   })
-  status: number;
+  status: string;
   @Column()
   date: string;
   @ManyToOne(() => UserEntity, (user) => user.transactions, {
