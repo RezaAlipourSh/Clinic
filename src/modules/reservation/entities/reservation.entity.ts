@@ -11,6 +11,7 @@ import { ClinicEntity } from "src/modules/clinic/entities/clinic.entity";
 import { UserEntity } from "src/modules/user/entities/user.entity";
 import { TransactionEntity } from "src/modules/transaction/entities/transaction.entity";
 import { TransactionStatus } from "src/modules/transaction/enum/transaction-status.enum";
+import { PlanDayName } from "src/modules/planer/enum/plan-status.enum";
 
 @Entity(EntityNames.Reservation)
 export class ReservationEntity {
@@ -24,7 +25,7 @@ export class ReservationEntity {
   start_visit_time: string;
   @Column()
   finish_visit_time: string;
-  @Column()
+  @Column({ type: "enum", enum: PlanDayName, default: PlanDayName.Saturday })
   date: string;
   @Column({ type: "enum", enum: ReserveStatus, default: ReserveStatus.Pending })
   status: string;
