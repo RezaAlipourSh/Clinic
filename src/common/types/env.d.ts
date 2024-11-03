@@ -18,5 +18,9 @@ namespace NodeJS {
     ACCESS_TOKEN_SECRET: string;
     REFRESH_TOKEN_SECRET: string;
     //zarinpal
+    ZARINPAL_VERIFY_URL: string;
+    ZARINPAL_REQUEST_URL: string;
+    ZARINPAL_GATEWAY_URL: string;
+    ZARINPAL_MERCHANT_ID: string;
   }
 }

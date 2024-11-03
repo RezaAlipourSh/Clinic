@@ -9,6 +9,7 @@ import { CategoryModule } from "../category/category.module";
 import { PlanerModule } from "../planer/planer.module";
 import { ReservationModule } from "../reservation/reservation.module";
 import { TransactionModule } from "../transaction/transaction.module";
+import { HttpApiModule } from "../http/http.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { TransactionModule } from "../transaction/transaction.module";
     PlanerModule,
     ReservationModule,
     TransactionModule,
+    HttpApiModule,
   ],
   controllers: [],
   providers: [],

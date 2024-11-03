@@ -15,12 +15,15 @@ import { REQUEST } from "@nestjs/core";
 import { PlanStatus } from "../planer/enum/plan-status.enum";
 import { ClinicReservesDto, ReservationDateDto } from "./dto/reserve.dto";
 import { divideTimeDifference } from "src/common/utility/function.util";
+import { TransactionEntity } from "../transaction/entities/transaction.entity";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ReservationService {
   constructor(
     @InjectRepository(ReservationEntity)
     private reserveRepo: Repository<ReservationEntity>,
+    @InjectRepository(TransactionEntity)
+    private transactionRepo: Repository<TransactionEntity>,
     @InjectRepository(PlanerEntity)
     private planRepo: Repository<PlanerEntity>,
     @Inject(REQUEST) private req: Request
@@ -72,9 +75,18 @@ export class ReservationService {
     });
     reserve = await this.reserveRepo.save(reserve);
 
+    let transaction = this.transactionRepo.create({
+      clinicId,
+      reservationId: reserve.id,
+      userId,
+    });
+
+    transaction = await this.transactionRepo.save(transaction);
+
     return {
       reserveID: reserve.id,
       message: "Time reserved",
+      transactionId: transaction.id,
     };
   }
 

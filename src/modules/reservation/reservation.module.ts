@@ -9,6 +9,7 @@ import { AuthService } from "../auth/auth.service";
 import { UserEntity } from "../user/entities/user.entity";
 import { UserOtpEntity } from "../user/entities/userotp.entity";
 import { JwtService } from "@nestjs/jwt";
+import { TransactionEntity } from "../transaction/entities/transaction.entity";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { JwtService } from "@nestjs/jwt";
       PlanerEntity,
       UserEntity,
       UserOtpEntity,
+      TransactionEntity,
     ]),
   ],
   controllers: [ReservationController],

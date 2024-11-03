@@ -21,23 +21,21 @@ export class TransactionEntity {
   userId: number;
   @Column()
   reservationId: number;
-  @Column()
+  @Column({ nullable: true })
   amount: string;
+  @Column({ nullable: true })
+  authority: string;
   @Column({
     type: "enum",
     enum: TransactionStatus,
     default: TransactionStatus.UnPaid,
   })
   status: string;
-  @Column()
-  date: string;
-  @ManyToOne(() => UserEntity, (user) => user.transactions, {
-    // onDelete: "SET NULL",
-  })
+  @Column({ nullable: true })
+  date: Date;
+  @ManyToOne(() => UserEntity, (user) => user.transactions, {})
   user: UserEntity;
-  @ManyToOne(() => ClinicEntity, (clinic) => clinic.transactions, {
-    // onDelete: "SET NULL",
-  })
+  @ManyToOne(() => ClinicEntity, (clinic) => clinic.transactions, {})
   clinic: ClinicEntity;
   @OneToOne(() => ReservationEntity, (reserve) => reserve.payment)
   reserve: ReservationEntity;
