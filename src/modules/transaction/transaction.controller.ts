@@ -1,42 +1,31 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from "@nestjs/common";
+import { Controller, Get, Post, Body, Res, Query } from "@nestjs/common";
 import { TransactionService } from "./transaction.service";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { UserAuth } from "src/common/decorator/auth.decorator";
+import { TransactionDto } from "./dto/transaction.dto";
+import { Response } from "express";
+import { FormType } from "src/common/enums/formType.enum";
 
 @Controller("transaction")
 @ApiTags("Transaction")
+@UserAuth()
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
   @Post()
-  create(@Body() createTransactionDto) {
+  @ApiConsumes(FormType.Urlencoded)
+  @ApiOperation({ summary: "Enter Your Transaction ID" })
+  createTransAction(@Body() createTransactionDto: TransactionDto) {
     return this.transactionService.create(createTransactionDto);
   }
 
-  @Get()
-  findAll() {
-    return this.transactionService.findAll();
-  }
-
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.transactionService.findOne(+id);
-  }
-
-  @Patch(":id")
-  update(@Param("id") id: string, @Body() updateTransactionDto) {
-    return this.transactionService.update(+id, updateTransactionDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.transactionService.remove(+id);
+  @Get("/verify")
+  async verifyTransaction(
+    @Query("Authority") authority: string,
+    @Query("Status") status: string,
+    @Res() res: Response
+  ) {
+    const url = await this.transactionService.verify(authority, status);
+    return res.redirect(url);
   }
 }
