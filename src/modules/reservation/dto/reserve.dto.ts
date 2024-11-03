@@ -1,7 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsEnum } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { IsEnum, Length } from "class-validator";
 import { PlanDayName } from "src/modules/planer/enum/plan-status.enum";
-import { TimesForReserve } from "../reservation.service";
 
 export class ReservationDateDto {
   @ApiProperty()
@@ -9,16 +8,15 @@ export class ReservationDateDto {
   @ApiProperty({ enum: PlanDayName })
   @IsEnum(PlanDayName)
   date: string;
+  @ApiProperty({ default: "15:20:00" })
+  @Length(8, 8, { message: "enter 'hh:mm:ss' time Format " })
+  start_visit_time: string;
 }
 
-export class ReserveTimeDto {
+export class ClinicReservesDto {
   @ApiProperty()
-  reserveId: number;
-  // @ApiProperty({ enum: PlanDayName })
-  // @ApiProperty({ enum: TimesForReserve, isArray: true })
-  @ApiProperty({ enum: TimesForReserve })
-  // @IsArray()
-  // @IsEnum(TimesForReserve, { each: true })
-  @IsEnum(TimesForReserve)
-  startTime: string;
+  clinicId: number;
+  @ApiProperty({ enum: PlanDayName })
+  @IsEnum(PlanDayName)
+  date: string;
 }
