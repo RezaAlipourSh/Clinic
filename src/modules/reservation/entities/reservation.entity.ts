@@ -21,7 +21,7 @@ export class ReservationEntity {
   clinicId: number;
   @Column()
   userId: number;
-  @Column({ nullable: true, unique: true })
+  @Column()
   start_visit_time: string;
   @Column({ nullable: true })
   finish_visit_time: string;

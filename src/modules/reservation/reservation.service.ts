@@ -13,11 +13,8 @@ import { PlanerEntity } from "../planer/entities/planer.entity";
 import { Request } from "express";
 import { REQUEST } from "@nestjs/core";
 import { PlanStatus } from "../planer/enum/plan-status.enum";
-import { ReservationDateDto, ReserveTimeDto } from "./dto/reserve.dto";
-import {
-  divideTimeDifference,
-  // getminutes,
-} from "src/common/utility/function.util";
+import { ClinicReservesDto, ReservationDateDto } from "./dto/reserve.dto";
+import { divideTimeDifference } from "src/common/utility/function.util";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ReservationService {
@@ -31,7 +28,7 @@ export class ReservationService {
 
   async create(createReservationDto: ReservationDateDto) {
     const { id: userId } = this.req.user;
-    const { clinicId, date } = createReservationDto;
+    const { clinicId, date, start_visit_time } = createReservationDto;
 
     const plans: DeepPartial<PlanerEntity>[] =
       await this.plansByClinicId(clinicId);
@@ -56,33 +53,37 @@ export class ReservationService {
       };
     }
 
+    const allTimes = await this.reservationTimes(clinicId, date);
+    const availableTimes = await this.reservedTimes(allTimes, date, clinicId);
+
+    if (!availableTimes.includes(start_visit_time)) {
+      return {
+        meesage:
+          "Time You Choosed isn't Available . please select from Folowing ReserveTime.",
+        availableTimes,
+      };
+    }
+
     let reserve = this.reserveRepo.create({
       userId,
       clinicId,
       date,
+      start_visit_time,
     });
-
-    const allTimes = await this.reservationTimes(clinicId, date);
-    const availableTimes = await this.reservedTimes(allTimes, date, clinicId);
-
     reserve = await this.reserveRepo.save(reserve);
 
     return {
       reserveID: reserve.id,
-      availableTimes,
-      message:
-        "Date selected Successfully, choose  visitTime with your reservationId",
+      message: "Time reserved",
     };
   }
 
-  async findAllClinicReserveByDate(clinicId: number, date: string) {
-    const reserve = await this.reserveRepo.find({
+  async findAllClinicReserveByDate(dto: ClinicReservesDto) {
+    const { clinicId, date } = dto;
+    const [reserve, count] = await this.reserveRepo.findAndCount({
       where: {
         clinicId,
         date,
-      },
-      order: {
-        finish_visit_time: "DESC",
       },
     });
 
@@ -90,31 +91,35 @@ export class ReservationService {
       throw new NotFoundException(
         " Not found any Reservation . check date & clinicId"
       );
-    return reserve;
+    // console.log(reserve);
+    return {
+      Count: count,
+      reserve,
+    };
   }
 
   // async selectVisitTime(reservationId: number, start_time: string) {
-  async selectVisitTime(reservation: ReserveTimeDto) {
-    const { reserveId, startTime } = reservation;
-    const reserve = await this.reserveRepo.findOneBy({ id: reserveId });
-    const clinicId = reserve.clinicId;
-    const date = reserve.date;
-    const allTimes = await this.reservationTimes(clinicId, date);
-    const availableTimes = await this.reservedTimes(allTimes, date, clinicId);
+  // async selectVisitTime(reservation: ReserveTimeDto) {
+  //   const { reserveId, startTime } = reservation;
+  //   const reserve = await this.reserveRepo.findOneBy({ id: reserveId });
+  //   const clinicId = reserve.clinicId;
+  //   const date = reserve.date;
+  //   const allTimes = await this.reservationTimes(clinicId, date);
+  //   const availableTimes = await this.reservedTimes(allTimes, date, clinicId);
 
-    if (!availableTimes.includes(startTime))
-      return {
-        message:
-          "this time is reserved. Select Another time Please from Following times",
-        availableTime: availableTimes,
-      };
-    reserve.start_visit_time = startTime;
-    await this.reserveRepo.save(reserve);
+  //   if (!availableTimes.includes(startTime))
+  //     return {
+  //       message:
+  //         "this time is reserved. Select Another time Please from Following times",
+  //       availableTime: availableTimes,
+  //     };
+  //   reserve.start_visit_time = startTime;
+  //   await this.reserveRepo.save(reserve);
 
-    return {
-      message: "Selected time Reserved",
-    };
-  }
+  //   return {
+  //     message: "Selected time Reserved",
+  //   };
+  // }
 
   async reservationTimes(clinicId: number, date: string) {
     const plans: DeepPartial<PlanerEntity>[] =
@@ -136,21 +141,21 @@ export class ReservationService {
   }
 
   async reservedTimes(times: string[], date: string, clinicId: number) {
-    const availableTimes: string[] = [];
+    let availableTimes: string[] = [];
 
     for (const time of times) {
-      const reservedtimes = await this.reserveRepo.find({
+      const reservedtimes = await this.reserveRepo.findOne({
         where: {
           clinicId,
           date,
           start_visit_time: time,
         },
       });
-
       if (!reservedtimes) availableTimes.push(time);
-      TimesForReserve[time] = time;
+      // TimesForReserve[time] = time;
     }
-
+    if (availableTimes.length <= 0)
+      throw new NotFoundException("Sorry There Isn't Availble Time.");
     return availableTimes;
   }
 
@@ -196,6 +201,6 @@ export class ReservationService {
   }
 }
 
-export let TimesForReserve: { [key: string]: string } = {
-  Select: "select",
-};
+// export let TimesForReserve: { [key: string]: string } = {
+//   Select: "select",
+// };
