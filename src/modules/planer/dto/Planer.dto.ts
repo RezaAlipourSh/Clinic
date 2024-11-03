@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsEnum, Length } from "class-validator";
+import { IsEnum, IsNumberString, Length } from "class-validator";
 import { PlanDayName, PlanStatus } from "../enum/plan-status.enum";
 
 export class PlanerDto {
@@ -10,8 +10,10 @@ export class PlanerDto {
   day_number: number;
   @ApiProperty()
   @Length(6, 6, { message: "must be 6 digit number . hour.minute.seconds" })
+  @IsNumberString()
   start_time: string;
   @ApiProperty()
+  @IsNumberString()
   @Length(6, 6, { message: "must be 6 digit number . hour.minute.seconds" })
   finish_time: string;
   @ApiProperty()
