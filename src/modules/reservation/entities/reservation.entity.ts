@@ -21,9 +21,9 @@ export class ReservationEntity {
   clinicId: number;
   @Column()
   userId: number;
-  @Column()
+  @Column({ nullable: true, unique: true })
   start_visit_time: string;
-  @Column()
+  @Column({ nullable: true })
   finish_visit_time: string;
   @Column({ type: "enum", enum: PlanDayName, default: PlanDayName.Saturday })
   date: string;

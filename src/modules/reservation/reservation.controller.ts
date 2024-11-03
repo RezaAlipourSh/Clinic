@@ -8,9 +8,9 @@ import {
   Delete,
 } from "@nestjs/common";
 import { ReservationService } from "./reservation.service";
-import { ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { UserAuth } from "src/common/decorator/auth.decorator";
-import { ReservationDto } from "./dto/reserve.dto";
+import { ReservationDateDto, ReserveTimeDto } from "./dto/reserve.dto";
 import { FormType } from "src/common/enums/formType.enum";
 
 @Controller("reservation")
@@ -20,9 +20,21 @@ export class ReservationController {
   constructor(private readonly reservationService: ReservationService) {}
 
   @Post()
+  @ApiOperation({
+    summary: "select visit date - then choose visit time on another Route",
+  })
   @ApiConsumes(FormType.Urlencoded, FormType.Json)
-  create(@Body() createReservationDto: ReservationDto) {
+  create(@Body() createReservationDto: ReservationDateDto) {
     return this.reservationService.create(createReservationDto);
+  }
+
+  @Post("/visitTime")
+  @ApiOperation({
+    summary: "select visit time",
+  })
+  @ApiConsumes(FormType.Urlencoded, FormType.Json)
+  visitTime(@Body() ReservationDto: ReserveTimeDto) {
+    return this.reservationService.selectVisitTime(ReservationDto);
   }
 
   // @Get()
