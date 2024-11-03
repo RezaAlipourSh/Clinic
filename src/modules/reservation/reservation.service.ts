@@ -1,12 +1,23 @@
-import { Inject, Injectable, NotFoundException, Scope } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  Scope,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ReservationEntity } from "./entities/reservation.entity";
-import { DeepPartial, LessThan, Repository } from "typeorm";
+import { DeepPartial, Repository } from "typeorm";
 import { PlanerEntity } from "../planer/entities/planer.entity";
 import { Request } from "express";
 import { REQUEST } from "@nestjs/core";
 import { PlanStatus } from "../planer/enum/plan-status.enum";
-import { ReservationDto } from "./dto/reserve.dto";
+import { ReservationDateDto, ReserveTimeDto } from "./dto/reserve.dto";
+import {
+  divideTimeDifference,
+  // getminutes,
+} from "src/common/utility/function.util";
 
 @Injectable({ scope: Scope.REQUEST })
 export class ReservationService {
@@ -18,71 +29,155 @@ export class ReservationService {
     @Inject(REQUEST) private req: Request
   ) {}
 
-  async create(createReservationDto: ReservationDto) {
+  async create(createReservationDto: ReservationDateDto) {
     const { id: userId } = this.req.user;
-    const { clinicId, date, finish_visit_time, start_visit_time } =
-      createReservationDto;
+    const { clinicId, date } = createReservationDto;
 
     const plans: DeepPartial<PlanerEntity>[] =
       await this.plansByClinicId(clinicId);
 
+    await this.findUserReserve(userId, date, clinicId);
+
     const days = [];
-    // const start_time = [];
-    // const finish_time = [];
     let selectedDay: string = null;
-    let start_time: string = null;
-    let finish_time: string = null;
 
     for (const item of plans) {
       days.push(item.day_name);
-
-      if ((item.day_name = date)) {
+      if (item.day_name === date) {
         selectedDay = date;
-        start_time = item.start_time;
-        finish_time = item.finish_time;
       }
     }
 
     if (plans && !days.includes(date)) {
       return {
         message:
-          "in your day clinic is Closed . please choose From One of the following days.",
+          "in this day clinic is Closed . please choose From One of the following days.",
         clinicWorksOn: days,
       };
     }
 
-    const lastVisit = await this.reserveRepo.findOne({
-      where: {
-        clinicId,
-        // finish_visit_time:[LessThan:finish_time]
-      },
-    });
-
-    const reserve = this.reserveRepo.create({
+    let reserve = this.reserveRepo.create({
       userId,
       clinicId,
       date,
-      finish_visit_time,
-      start_visit_time,
     });
 
-    await this.reserveRepo.save(reserve);
+    const allTimes = await this.reservationTimes(clinicId, date);
+    const availableTimes = await this.reservedTimes(allTimes, date, clinicId);
+
+    reserve = await this.reserveRepo.save(reserve);
+
     return {
-      message: "Reserved Successfully",
+      reserveID: reserve.id,
+      availableTimes,
+      message:
+        "Date selected Successfully, choose  visitTime with your reservationId",
     };
   }
-  // findAll() {
-  //   return `This action returns all reservation`;
-  // }
-  // findOne(id: number) {
-  //   return `This action returns a #${id} reservation`;
-  // }
-  // update(id: number, updateReservationDto) {
-  //   return `This action updates a #${id} reservation`;
-  // }
-  // remove(id: number) {
-  //   return `This action removes a #${id} reservation`;
-  // }
+
+  async findAllClinicReserveByDate(clinicId: number, date: string) {
+    const reserve = await this.reserveRepo.find({
+      where: {
+        clinicId,
+        date,
+      },
+      order: {
+        finish_visit_time: "DESC",
+      },
+    });
+
+    if (!reserve)
+      throw new NotFoundException(
+        " Not found any Reservation . check date & clinicId"
+      );
+    return reserve;
+  }
+
+  // async selectVisitTime(reservationId: number, start_time: string) {
+  async selectVisitTime(reservation: ReserveTimeDto) {
+    const { reserveId, startTime } = reservation;
+    const reserve = await this.reserveRepo.findOneBy({ id: reserveId });
+    const clinicId = reserve.clinicId;
+    const date = reserve.date;
+    const allTimes = await this.reservationTimes(clinicId, date);
+    const availableTimes = await this.reservedTimes(allTimes, date, clinicId);
+
+    if (!availableTimes.includes(startTime))
+      return {
+        message:
+          "this time is reserved. Select Another time Please from Following times",
+        availableTime: availableTimes,
+      };
+    reserve.start_visit_time = startTime;
+    await this.reserveRepo.save(reserve);
+
+    return {
+      message: "Selected time Reserved",
+    };
+  }
+
+  async reservationTimes(clinicId: number, date: string) {
+    const plans: DeepPartial<PlanerEntity>[] =
+      await this.plansByClinicId(clinicId);
+
+    let reservation: string[] = [];
+
+    let start_time: string = null;
+    let finish_time: string = null;
+    for (const item of plans) {
+      if (item.day_name === date) {
+        start_time = item.start_time;
+        finish_time = item.finish_time;
+      }
+    }
+
+    reservation = divideTimeDifference(start_time, finish_time, 20);
+    return reservation;
+  }
+
+  async reservedTimes(times: string[], date: string, clinicId: number) {
+    const availableTimes: string[] = [];
+
+    for (const time of times) {
+      const reservedtimes = await this.reserveRepo.find({
+        where: {
+          clinicId,
+          date,
+          start_visit_time: time,
+        },
+      });
+
+      if (!reservedtimes) availableTimes.push(time);
+      TimesForReserve[time] = time;
+    }
+
+    return availableTimes;
+  }
+
+  async findOne(id: number) {
+    const reserve = await this.reserveRepo.findOneBy({ id });
+    if (!reserve) throw new NotFoundException("Reserve Not Found");
+    return reserve;
+  }
+  async findUserReserve(userId: number, date: string, clinicId: number) {
+    const reserve = await this.reserveRepo.findOneBy({
+      userId,
+      date,
+      clinicId,
+    });
+    if (reserve)
+      throw new ConflictException(
+        "you can reserve a one visitTime per day . delete your last reserve then try again-"
+      );
+    return true;
+  }
+  async remove(id: number) {
+    await this.findOne(id);
+    await this.reserveRepo.delete({ id });
+    return {
+      message: "Reservation Removed.",
+    };
+  }
 
   async plansByClinicId(id: number) {
     const plans = await this.planRepo.find({
@@ -95,9 +190,12 @@ export class ReservationService {
       },
       order: { id: "DESC" },
     });
-    console.log(plans);
     if (plans.length <= 0)
-      throw new NotFoundException("Open Plan Not Founded For Clinic");
+      throw new NotFoundException("Open Plan Not Founded For Clinic ");
     return plans;
   }
 }
+
+export let TimesForReserve: { [key: string]: string } = {
+  Select: "select",
+};
