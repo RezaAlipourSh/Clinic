@@ -17,7 +17,7 @@ import { UserRole } from "../enum/userRole.enum";
 export class UserEntity {
   @PrimaryGeneratedColumn("increment")
   id: number;
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar", length: 50 })
   first_name: string;
   @Column({ nullable: true })
   last_name: string;
